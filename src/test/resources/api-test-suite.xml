@@ -1,0 +1,19 @@
+<!-- TestNG Suite for API Tests -->
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Employee Leave Management System - API Test Suite" verbose="1">
+    <test name="Authentication API Tests">
+        <classes>
+            <class name="com.elms.api.AuthAPITest" />
+        </classes>
+    </test>
+    <test name="Employee API Tests">
+        <classes>
+            <class name="com.elms.api.EmployeeAPITest" />
+        </classes>
+    </test>
+    <test name="Manager API Tests">
+        <classes>
+            <class name="com.elms.api.ManagerAPITest" />
+        </classes>
+    </test>
+</suite>
