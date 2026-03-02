@@ -1,0 +1,19 @@
+<!-- TestNG Suite for UI Tests -->
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Employee Leave Management System - UI Test Suite" verbose="1">
+    <test name="Login UI Tests">
+        <classes>
+            <class name="com.elms.ui.tests.LoginUITest" />
+        </classes>
+    </test>
+    <test name="Employee UI Tests">
+        <classes>
+            <class name="com.elms.ui.tests.EmployeeUITest" />
+        </classes>
+    </test>
+    <test name="Manager UI Tests">
+        <classes>
+            <class name="com.elms.ui.tests.ManagerUITest" />
+        </classes>
+    </test>
+</suite>
