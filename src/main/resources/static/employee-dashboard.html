@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container-fluid">
+            <span class="navbar-brand">Employee Dashboard</span>
+            <span class="text-white" id="userName"></span>
+            <button class="btn btn-sm btn-outline-light" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Casual Leave</h5>
+                        <h2 id="casualLeave">5</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Sick Leave</h5>
+                        <h2 id="sickLeave">5</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="card-header">Apply for Leave</div>
+            <div class="card-body">
+                <div id="alertContainer"></div>
+                <form id="leaveForm">
+                    <div class="mb-3">
+                        <label>Leave Type</label>
+                        <select class="form-select" id="leaveType" required>
+                            <option value="CASUAL žCasual</option>
+                            <option value="SICK">Sick</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Start Date</label>
+                        <input type="date" class="form-control" id="startDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>End Date</label>
+                        <input type="date" class="form-control" id="endDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Reason</label>
+                        <textarea class="form-control" id="reason" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="card-header">My Leave Requests</div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr><th>Type</th><th>Start Date</th><th>End Date</th><th>Duration</th><th>Status</th><th>Comments</th></tr>
+                    </thead>
+                    <tbody id="leaveTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        const API_URL = 'http://localhost:8080';
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!token) window.location.href = 'index.html';
+        document.getElementById('userName').textContent = user.fullName;
+        document.getElementById('casualLeave').textContent = user.casualLeaveBalance;
+        document.getElementById('sickLeave').textContent = user.sickLeaveBalance;
+        document.getElementById('leaveForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {leaveType: document.getElementById('leaveType').value, startDate: document.getElementById('startDate').value, endDate: document.getElementById('endDate').value, reason: document.getElementById('reason').value};
+            try {
+                const response = await fetch(`${API_URL}/api/employee/leave/apply`, {method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify(data)});
+                if (response.ok) {
+                    alert('Leave applied successfully!');
+                    document.getElementById('leaveForm').reset();
+                    loadLeaveRequests();
+                } else {
+                    const error = await response.json();
+                    alert(error.message);
+                }
+            } catch (error) {
+                alert('Error occurred');
+            }
+        });
+        async function loadLeaveRequests() {
+            const response = await fetch(`${API_URL}/api/employee/leave/my-requests`, {headers: {'Authorization': `Bearer ${token}`}});
+            if (response.ok) {
+                const requests = await response.json();
+                document.getElementById('leaveTableBody').innerHTML = requests.map(r => `<tr><td>${r.leaveType}</td><td>${r.startDate}</td><td>${r.endDate}</td><td>${r.duration}</td><td>${r.status}</td><td>${r.comments || '-'}</td></tr>`).join('');
+            }
+        }
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+        loadLeaveRequests();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
